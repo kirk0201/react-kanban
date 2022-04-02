@@ -77,7 +77,33 @@ function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
   const onDragEnd = (info: DropResult) => {
     const { destination, source, draggableId } = info;
+    const category = draggableId.slice(9);
+    // console.log(category);
+    console.log(info);
+
+    // 드래그를 하지 않았을 때
     if (!destination) return;
+
+    // 카테고리를 이동할때
+    if (
+      source.droppableId === "category" &&
+      destination.droppableId === "category"
+    ) {
+      setToDos((prev): any => {
+        const newToDo = { ...prev };
+        const makeArr = Object.keys(newToDo).map((cate) => newToDo[cate]);
+        console.log("makeArr", makeArr);
+        const taskObj = makeArr[source.index];
+
+        makeArr.splice(source.index, 1);
+        makeArr.splice(destination.index, 0, taskObj);
+        console.log("makeArr", makeArr);
+        return { makeArr };
+      });
+
+      return console.log("통과");
+    }
+    // 시작점과 목적지가 같은 카테고리일 때
     if (destination?.droppableId === source.droppableId) {
       setToDos((prev): any => {
         const newToDo = [...prev[source.droppableId]];
@@ -90,10 +116,12 @@ function App() {
           [source.droppableId]: newToDo,
         };
       });
-    } else if (destination?.droppableId !== source.droppableId) {
+    }
+    // 시작점과 목적지가 다른 카테고리일 때
+    else if (destination?.droppableId !== source.droppableId) {
       setToDos((prev) => {
         const prevBoardToDo = [...prev[source.droppableId]];
-        const newBoardToDo = [...prev[destination?.droppableId as string]];
+        const newBoardToDo = [...prev[destination?.droppableId]];
         const taskObj = prevBoardToDo[source.index];
         prevBoardToDo.splice(source.index, 1);
         newBoardToDo.splice(destination?.index, 0, taskObj);
@@ -111,11 +139,21 @@ function App() {
       <GlobalStyle />
       <DragDropContext onDragEnd={onDragEnd}>
         <Wrapper>
-          <Boards>
-            {Object.keys(toDos).map((toDoKey) => (
-              <Board key={toDoKey} toDos={toDos[toDoKey]} boardId={toDoKey} />
-            ))}
-          </Boards>
+          <Droppable droppableId="category" type="category">
+            {(magic) => (
+              <Boards ref={magic.innerRef} {...magic.droppableProps}>
+                {Object.keys(toDos).map((toDoKey, index) => (
+                  <Board
+                    boardId={toDoKey}
+                    key={toDoKey}
+                    toDos={toDos[toDoKey]}
+                    index={index}
+                  />
+                ))}
+                {magic.placeholder}
+              </Boards>
+            )}
+          </Droppable>
         </Wrapper>
       </DragDropContext>
     </>
@@ -135,8 +173,9 @@ const Wrapper = styled.div`
 const Boards = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  width: 100%;
+  gap: 50px;
+  padding: 10px 10px;
+  background-color: rgba(0, 0, 0, 0.7);
 `;
 
 export default App;
