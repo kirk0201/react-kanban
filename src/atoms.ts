@@ -16,7 +16,14 @@ export const toDoState = atom<IToDoState>({
       { id: 1, toDo: "one" },
       { id: 2, toDo: "two" },
     ],
-    doing: [],
-    done: [],
+    doing: [
+      { id: 3, toDo: "three" },
+      { id: 4, toDo: "four" },
+    ],
+    done: [{ id: 5, toDo: "five" }],
+    test: [],
+    // test2: [],
+    // test3: [],
+    // test4: [],
   },
 });
