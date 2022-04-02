@@ -98,7 +98,7 @@ function App() {
         makeArr.splice(source.index, 1);
         makeArr.splice(destination.index, 0, taskObj);
         console.log("makeArr", makeArr);
-        return { makeArr };
+        return makeArr;
       });
 
       return console.log("통과");
