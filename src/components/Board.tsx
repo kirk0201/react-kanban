@@ -1,9 +1,13 @@
 import React from "react";
-import { Draggable, Droppable } from "react-beautiful-dnd";
+import {
+  Draggable,
+  DraggableStateSnapshot,
+  Droppable,
+} from "react-beautiful-dnd";
 import { useForm } from "react-hook-form";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { IToDo, toDoState } from "../atoms";
+import { boardDragging, IToDo, toDoState } from "../atoms";
 import DraggableCard from "./DraggableCard";
 
 interface IBoradProps {
@@ -15,6 +19,7 @@ interface IForm {
   toDo: string;
 }
 function Board({ toDos, boardId, index }: IBoradProps) {
+  const setDragBoard = useSetRecoilState(boardDragging);
   const setToDo = useSetRecoilState(toDoState);
 
   const { register, handleSubmit, setValue } = useForm<IForm>();
@@ -32,15 +37,21 @@ function Board({ toDos, boardId, index }: IBoradProps) {
     });
     setValue("toDo", "");
   };
+  const isDragging = (snapshot: DraggableStateSnapshot) => {
+    if (snapshot.isDragging) {
+      setDragBoard(true);
+    } else setDragBoard(false);
+  };
 
   return (
     <Draggable key={boardId} draggableId={"board-" + boardId} index={index}>
-      {(magic) => (
+      {(magic, snapshot) => (
         <BoardWrapper
           ref={magic.innerRef}
           {...magic.draggableProps}
           {...magic.dragHandleProps}
         >
+          {isDragging(snapshot)}
           <Title>{boardId.toUpperCase()}</Title>
           <Form onSubmit={handleSubmit(submitHandler)}>
             <input
