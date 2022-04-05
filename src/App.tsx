@@ -189,10 +189,10 @@ function App() {
         </Droppable>
         <Droppable droppableId="trash" type="active">
           {(magic) => (
-            <div ref={magic.innerRef} {...magic.droppableProps}>
+            <Trash ref={magic.innerRef} {...magic.droppableProps}>
               <img src="trash.png"></img>
               {/* {magic.placeholder} */}
-            </div>
+            </Trash>
           )}
         </Droppable>
       </DragDropContext>
@@ -209,6 +209,8 @@ const Wrapper = styled.div`
   width: 100%;
   max-width: calc(100vw / 2);
   height: 100vh;
+  position: relative;
+  /* top: -15vh; */
 `;
 
 const Boards = styled.div`
@@ -218,6 +220,13 @@ const Boards = styled.div`
   gap: 50px;
   padding: 10px 10px;
   background-color: rgba(0, 0, 0, 0.5);
+`;
+
+const Trash = styled.div`
+  position: fixed;
+  /* z-index: 10; */
+  right: 0;
+  bottom: 0;
 `;
 
 export default App;
