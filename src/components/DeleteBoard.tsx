@@ -1,19 +1,49 @@
-import { Draggable } from "react-beautiful-dnd";
+import { Droppable } from "react-beautiful-dnd";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import { boardDragging } from "../atoms";
 
 function DeleteBoard() {
+  const getDragging = useRecoilValue(boardDragging);
   return (
-    <Draggable draggableId="delete" index={0}>
+    <Droppable droppableId="trash" type="active">
       {(magic) => (
-        <img
-          ref={magic.innerRef}
-          {...magic.draggableProps}
-          {...magic.dragHandleProps}
-          src="trash.png"
-        ></img>
+        <Trash ref={magic.innerRef} {...magic.droppableProps}>
+          <TrashMention isDragging={Boolean(getDragging)}>
+            Drag the board to delete it
+          </TrashMention>
+          <img src="trash.png"></img>
+        </Trash>
       )}
-    </Draggable>
+    </Droppable>
   );
 }
+
+const Trash = styled.div`
+  position: fixed;
+  right: 10px;
+  bottom: 0;
+`;
+interface ITrashProps {
+  isDragging: boolean;
+}
+const TrashMention = styled.div<ITrashProps>`
+  position: relative;
+  background-color: white;
+  padding: 5px;
+  font-weight: 700;
+  border-radius: 15px;
+  ${(props) =>
+    props.isDragging ? "animation: 1s linear infinite trashAni;" : ""}
+
+  @keyframes trashAni {
+    from {
+      transform: translateY(10px);
+    }
+    to {
+      transform: translateY(-10px);
+    }
+  }
+`;
 
 export default DeleteBoard;

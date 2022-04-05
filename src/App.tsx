@@ -1,14 +1,8 @@
 import { createGlobalStyle } from "styled-components";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "react-beautiful-dnd";
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import styled from "styled-components";
-import { IToDoState, toDoState } from "./atoms";
-import { useRecoilState } from "recoil";
-import DraggableCard from "./components/DraggableCard";
+import { boardDragging, IToDoState, toDoState } from "./atoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import Board from "./components/Board";
 import AddBoard from "./components/AddBoard";
 import DeleteBoard from "./components/DeleteBoard";
@@ -78,11 +72,15 @@ a {
 
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
+  const setDragging = useSetRecoilState(boardDragging);
+
   const onDragEnd = (info: DropResult) => {
-    const { destination, source, draggableId, type } = info;
+    const { destination, source, type } = info;
 
     console.log(info);
-
+    setDragging((prev) => {
+      return !prev;
+    });
     // 드래그를 하지 않았을 때
     if (!destination) return;
     // if (source.droppableId === "board" && destination.droppableId === "trash")
@@ -104,6 +102,7 @@ function App() {
           });
           console.log("newObj", newObj);
           SetLocalStorageHandler(newObj);
+
           return newObj;
         });
       }
@@ -115,20 +114,15 @@ function App() {
         setToDos((prev): IToDoState => {
           const newToDo = Object.keys(prev);
           const taskObj = String(newToDo[source.index]);
-          console.log(newToDo);
-          console.log(taskObj);
 
           newToDo.splice(source.index, 1);
-          console.log("1", newToDo);
           newToDo.splice(destination.index, 0, taskObj);
-          console.log("2", newToDo);
 
           const newObj: IToDoState = {};
 
           newToDo.forEach((key) => {
             newObj[key] = prev[key];
           });
-          console.log(newObj);
           return newObj;
         });
       }
@@ -187,14 +181,7 @@ function App() {
             </Wrapper>
           )}
         </Droppable>
-        <Droppable droppableId="trash" type="active">
-          {(magic) => (
-            <Trash ref={magic.innerRef} {...magic.droppableProps}>
-              <img src="trash.png"></img>
-              {/* {magic.placeholder} */}
-            </Trash>
-          )}
-        </Droppable>
+        <DeleteBoard />
       </DragDropContext>
     </>
   );
@@ -210,7 +197,6 @@ const Wrapper = styled.div`
   max-width: calc(100vw / 2);
   height: 100vh;
   position: relative;
-  /* top: -15vh; */
 `;
 
 const Boards = styled.div`
@@ -220,13 +206,6 @@ const Boards = styled.div`
   gap: 50px;
   padding: 10px 10px;
   background-color: rgba(0, 0, 0, 0.5);
-`;
-
-const Trash = styled.div`
-  position: fixed;
-  /* z-index: 10; */
-  right: 0;
-  bottom: 0;
 `;
 
 export default App;

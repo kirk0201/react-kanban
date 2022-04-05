@@ -1,15 +1,14 @@
-import React from "react";
 import { useForm } from "react-hook-form";
-import { useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { IToDoState, toDoState } from "../atoms";
+import { toDoState } from "../atoms";
 import { SetLocalStorageHandler } from "../todo.utils";
 
 interface IBoardForm {
   board: string;
 }
 function AddBoard() {
-  const [getBoard, addBoard] = useRecoilState(toDoState);
+  const addBoard = useSetRecoilState(toDoState);
   const { register, handleSubmit, setValue, setError, formState } =
     useForm<IBoardForm>();
 
@@ -28,9 +27,6 @@ function AddBoard() {
         ...prev,
         [board]: [],
       };
-      console.log(info);
-      console.log("newBoard", newBoard);
-
       SetLocalStorageHandler(newBoard);
       return newBoard;
     });
@@ -58,7 +54,6 @@ function AddBoard() {
 
 const Container = styled.div`
   position: relative;
-  /* top: 15vh; */
 `;
 const Form = styled.form`
   display: flex;
@@ -78,6 +73,5 @@ const ErrorDiv = styled.span`
   color: #ff4f4f;
   font-weight: 700;
   margin: 0 auto;
-  /* padding: 3px 3px; */
 `;
 export default AddBoard;
