@@ -6,10 +6,12 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import styled from "styled-components";
-import { toDoState } from "./atoms";
+import { IToDoState, toDoState } from "./atoms";
 import { useRecoilState } from "recoil";
 import DraggableCard from "./components/DraggableCard";
 import Board from "./components/Board";
+import AddBoard from "./components/AddBoard";
+import DeleteBoard from "./components/DeleteBoard";
 const GlobalStyle = createGlobalStyle`
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
@@ -76,32 +78,59 @@ a {
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
   const onDragEnd = (info: DropResult) => {
-    const { destination, source, draggableId } = info;
-    const category = draggableId.slice(9);
-    // console.log(category);
+    const { destination, source, draggableId, type } = info;
+
     console.log(info);
 
     // 드래그를 하지 않았을 때
     if (!destination) return;
+    // if (source.droppableId === "board" && destination.droppableId === "trash")
+    //   return console.log("이거다");
+    if (type === "active") {
+      // 보드 삭제
+      if (
+        source.droppableId === "board" &&
+        destination.droppableId === "trash"
+      ) {
+        setToDos((prev) => {
+          const newToDo = Object.keys(prev);
 
-    // 카테고리를 이동할때
-    if (
-      source.droppableId === "category" &&
-      destination.droppableId === "category"
-    ) {
-      setToDos((prev): any => {
-        const newToDo = { ...prev };
-        const makeArr = Object.keys(newToDo).map((cate) => newToDo[cate]);
-        console.log("makeArr", makeArr);
-        const taskObj = makeArr[source.index];
+          newToDo.splice(source.index, 1);
 
-        makeArr.splice(source.index, 1);
-        makeArr.splice(destination.index, 0, taskObj);
-        console.log("makeArr", makeArr);
-        return makeArr;
-      });
+          const newObj: IToDoState = {};
+          newToDo.forEach((key) => {
+            newObj[key] = prev[key];
+          });
+          console.log("newObj", newObj);
+          return newObj;
+        });
+      }
+      // 보드를 이동할때
+      if (
+        source.droppableId === "board" &&
+        destination.droppableId === "board"
+      ) {
+        setToDos((prev): IToDoState => {
+          const newToDo = Object.keys(prev);
+          const taskObj = String(newToDo[source.index]);
+          console.log(newToDo);
+          console.log(taskObj);
 
-      return console.log("통과");
+          newToDo.splice(source.index, 1);
+          console.log("1", newToDo);
+          newToDo.splice(destination.index, 0, taskObj);
+          console.log("2", newToDo);
+
+          const newObj: IToDoState = {};
+
+          newToDo.forEach((key) => {
+            newObj[key] = prev[key];
+          });
+          console.log(newObj);
+          return newObj;
+        });
+      }
+      return;
     }
     // 시작점과 목적지가 같은 카테고리일 때
     if (destination?.droppableId === source.droppableId) {
@@ -138,9 +167,10 @@ function App() {
     <>
       <GlobalStyle />
       <DragDropContext onDragEnd={onDragEnd}>
-        <Wrapper>
-          <Droppable droppableId="category" type="category">
-            {(magic) => (
+        <Droppable droppableId="board" type="active" direction="horizontal">
+          {(magic) => (
+            <Wrapper>
+              <AddBoard />
               <Boards ref={magic.innerRef} {...magic.droppableProps}>
                 {Object.keys(toDos).map((toDoKey, index) => (
                   <Board
@@ -152,9 +182,17 @@ function App() {
                 ))}
                 {magic.placeholder}
               </Boards>
-            )}
-          </Droppable>
-        </Wrapper>
+            </Wrapper>
+          )}
+        </Droppable>
+        <Droppable droppableId="trash" type="active">
+          {(magic) => (
+            <div ref={magic.innerRef} {...magic.droppableProps}>
+              <img src="trash.png"></img>
+              {/* {magic.placeholder} */}
+            </div>
+          )}
+        </Droppable>
       </DragDropContext>
     </>
   );
@@ -162,20 +200,22 @@ function App() {
 
 const Wrapper = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   margin: 0 auto;
   justify-content: center;
   width: 100%;
-  max-width: 800px;
+  max-width: calc(100vw / 2);
   height: 100vh;
 `;
 
 const Boards = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  width: 100%;
   gap: 50px;
   padding: 10px 10px;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
 `;
 
 export default App;

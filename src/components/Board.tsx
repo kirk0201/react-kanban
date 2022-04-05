@@ -10,12 +10,11 @@ interface IBoradProps {
   toDos: IToDo[];
   boardId: string;
   index: number;
-  key: string;
 }
 interface IForm {
   toDo: string;
 }
-function Board({ toDos, boardId, index, key }: IBoradProps) {
+function Board({ toDos, boardId, index }: IBoradProps) {
   const setToDo = useSetRecoilState(toDoState);
 
   const { register, handleSubmit, setValue } = useForm<IForm>();
@@ -35,7 +34,7 @@ function Board({ toDos, boardId, index, key }: IBoradProps) {
   };
 
   return (
-    <Draggable key={key} draggableId={"category-" + boardId} index={index}>
+    <Draggable key={boardId} draggableId={"board-" + boardId} index={index}>
       {(magic) => (
         <BoardWrapper
           ref={magic.innerRef}
@@ -50,7 +49,7 @@ function Board({ toDos, boardId, index, key }: IBoradProps) {
               {...register("toDo", { required: "toDo is required" })}
             />
           </Form>
-          <Droppable droppableId={boardId}>
+          <Droppable droppableId={boardId} type="card">
             {(magic, snapshot) => (
               <BoardArea
                 isDraggingOver={snapshot.isDraggingOver}
