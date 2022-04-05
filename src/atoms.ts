@@ -1,5 +1,9 @@
 import { atom } from "recoil";
 
+export const LOCAL_TODO = "LOCAL_TODO";
+const getLocalStorage = localStorage.getItem(LOCAL_TODO) || "{}";
+
+const parsedLocalStorage = JSON.parse(getLocalStorage);
 export interface IToDo {
   toDo: string;
   id: number;
@@ -11,19 +15,5 @@ export interface IToDoState {
 
 export const toDoState = atom<IToDoState>({
   key: "todostate",
-  default: {
-    todo: [
-      { id: 1, toDo: "one" },
-      { id: 2, toDo: "two" },
-    ],
-    doing: [
-      { id: 3, toDo: "three" },
-      { id: 4, toDo: "four" },
-    ],
-    done: [{ id: 5, toDo: "five" }],
-    test: [],
-    // test2: [],
-    // test3: [],
-    // test4: [],
-  },
+  default: parsedLocalStorage,
 });
