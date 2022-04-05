@@ -12,6 +12,7 @@ import DraggableCard from "./components/DraggableCard";
 import Board from "./components/Board";
 import AddBoard from "./components/AddBoard";
 import DeleteBoard from "./components/DeleteBoard";
+import { SetLocalStorageHandler } from "./todo.utils";
 const GlobalStyle = createGlobalStyle`
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
@@ -102,6 +103,7 @@ function App() {
             newObj[key] = prev[key];
           });
           console.log("newObj", newObj);
+          SetLocalStorageHandler(newObj);
           return newObj;
         });
       }

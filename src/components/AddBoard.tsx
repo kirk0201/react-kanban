@@ -1,27 +1,26 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
-import { toDoState } from "../atoms";
+import { IToDoState, toDoState } from "../atoms";
+import { SetLocalStorageHandler } from "../todo.utils";
 
 interface IBoardForm {
   board: string;
 }
 function AddBoard() {
-  const addBoard = useSetRecoilState(toDoState);
+  const [getBoard, addBoard] = useRecoilState(toDoState);
   const { register, handleSubmit, setValue } = useForm<IBoardForm>();
 
   const boardHandler = ({ board }: IBoardForm) => {
-    const string = String(board);
     addBoard((prev) => {
-      console.log({
+      const newBoard = {
         ...prev,
-        [string]: [],
-      });
-      return {
-        ...prev,
-        [string]: [],
+        [board]: [],
       };
+      console.log("newBoard", newBoard);
+      SetLocalStorageHandler(newBoard);
+      return newBoard;
     });
     setValue("board", "");
   };
