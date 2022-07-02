@@ -37,7 +37,7 @@ function AddBoard() {
       <Form onSubmit={handleSubmit(boardHandler)}>
         <input
           type="text"
-          placeholder="Please add your board name"
+          placeholder="추가하시려는 보드명을 입력하세요"
           {...register("board", {
             required: "board name is required",
             validate: (value) =>

@@ -10,7 +10,7 @@ function DeleteBoard() {
       {(magic) => (
         <Trash ref={magic.innerRef} {...magic.droppableProps}>
           <TrashMention isDragging={Boolean(getDragging)}>
-            Drag the board to delete it
+            삭제를 원하시면 이곳으로 옮기세요
           </TrashMention>
           <img src="trash.png"></img>
         </Trash>
